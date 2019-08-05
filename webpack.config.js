@@ -1,51 +1,27 @@
-
-const BabiliPlugin = require('babili-webpack-plugin');
-const path = require('path');
-const webpack = require('webpack');
+var path = require('path');
 
 module.exports = {
-  entry: {
-    index: './src/index.js',
-  },
+  entry: './src/index.js',
   output: {
-    path: path.join(__dirname, './dist'),
-    filename: '[name].bundle.js',
+    path: path.resolve(__dirname, 'lib'),
+    filename: 'index.js',
+    libraryTarget: 'commonjs2'
   },
+
   module: {
+
     rules: [
       {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
-      },
-      {
-        test: /\.js$/,
-        loader: 'babel-loader',
-        include: [
-          path.resolve(__dirname, 'src'),
-        ],
-      }, {
-        test: /\.json$/,
-        loader: 'json-loader',
-      }],
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        loaders: "babel-loader",
+        options: {
+          presets: ['@babel/preset-env', '@babel/preset-react']
+        }
+      }
+    ]
   },
-  plugins: [
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
-    }),
-    new BabiliPlugin(),
-  ],
-  resolve: {
-    modules: [
-      path.join(process.cwd(), 'src'),
-      'node_modules',
-    ],
-    extensions: ['.js', '.json'],
-  },
-  stats: {
-    verbose: true,
-  },
-  devtool: false,
   externals: {
-    react: 'React',
-  },
+    'react': 'commonjs react'
+  }
 };

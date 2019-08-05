@@ -1,46 +1,54 @@
-import React from 'react';
-import { storiesOf, action } from '@kadira/storybook';
-import { withState } from 'recompose';
-import AddressForm from '../src/index';
+import React, { useState } from 'react';
+import { storiesOf, action } from '@storybook/react';
+// import { InputAddress, FullAddress } from '../src/index';
+import { InputAddress } from '../lib/index'
 
-import '../src/styles.css';
+// import '../src/styles.css';
+
+
+class CustomFullAddress extends React.Component {
+  state = {
+    address: {},
+  }
+  onChange = this.onChange.bind(this)
+  onSelected = this.onSelected.bind(this)
+
+  onChange(e) {
+    this.setState({
+      [e.name]: e.value
+    })
+  }
+
+  onSelected(fullAddress) {
+    const { district, amphoe, province, zipcode } = fullAddress
+    console.log(fullAddress)
+    this.setState({
+      district,
+      amphoe,
+      province,
+      zipcode
+    })
+  }
+
+  render() {
+    return (
+      <div>
+        <InputAddress onSelected={this.onSelected} onChange={this.onChange} value={this.state.district} type="district" name="ตำบล" placeholder="ตำบล" />
+        <InputAddress onSelected={this.onSelected} onChange={this.onChange} value={this.state.amphoe} type="amphoe" name="อำเภอ" />
+        <InputAddress onSelected={this.onSelected} onChange={this.onChange} value={this.state.province} type="province" name="จังหวัด" />
+        <InputAddress onSelected={this.onSelected} onChange={this.onChange} value={this.state.zipcode} type="zipcode" name="รหัสไปรษณีย์" />
+      </div>
+    )
+  }
+}
+
 
 storiesOf('Component', module)
-  .add('montage', () => (
-    <div style={{ width: 350 }}>
-      <AddressForm onAddressSelected={action('onSelectedAdress')} />
-      <code>{'<AddressForm onAddressSelected={action(\'onSelectedAdress\')} />'}</code>
-    </div>
-  ))
-  .add('handle result', () => {
-    const WithStateComponent = withState('result', 'setResult', null)(({ result, setResult }) => (
+  .add('full address', () => {
+    return (
       <div style={{ width: 350 }}>
-        <div>
-          selected : {result ? `${result.p} ${result.a} ${result.d} ${result.z}` : null}
-        </div>
-        <AddressForm onAddressSelected={address => setResult(address)} />
+        <CustomFullAddress />
       </div>
-      ));
-    return (<div>
-      <WithStateComponent />
-      <code>
-        {`
-         <div style={{ width: 350 }}>
-          <div>
-            selected : {result ? \`\${result.p} \${result.a} \${result.d} \${result.z}\` : null}
-          </div>
-          <AddressForm onAddressSelected={address => setResult(address)} />
-        </div>
-        `}
-      </code>
-    </div>);
+    )
   })
-  .add('custom render result', () => (
-    <div style={{ width: 400 }}>
-      <AddressForm
-        renderResult={data => <b>{`Hi ${data.p}:${data.d} ${data.a}`}</b>}
-        onAddressSelected={action('onSelectedAdress')}
-      />
-    </div>
-  ));
 
